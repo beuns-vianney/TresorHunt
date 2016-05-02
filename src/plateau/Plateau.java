@@ -102,7 +102,11 @@ public class Plateau {
 		console = null ;
 
 		// Caractéristiques initiales pour la fenetre.
-		window.setTitle("Plateau de jeu ("+taille+"X"+taille+")");
+		if(Ile.tour1){
+			window.setTitle("Plateau de jeu de l'équipe 1.");
+		}else{
+			window.setTitle("Plateau de jeu de l'équipe 2.");
+		}
 		window.setLocationRelativeTo(null);
 		window.setLayout(new BorderLayout());
 		// La fermeture de la fenetre ne fait que la cacher. 
