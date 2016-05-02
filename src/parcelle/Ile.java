@@ -23,9 +23,11 @@ public class Ile {
 	private int size;
 	private int[][] jeu;
 	private Plateau grille;
-	private Navire navire1;
-	private Navire navire2;
+	private static Navire navire1;
+	private static Navire navire2;
 	public static boolean fin = false;
+	public static boolean tour1 = true;
+	public static boolean tour2 = false;
 	/**
 	 * 
 	 * @param idx	index de ligne
@@ -37,7 +39,9 @@ public class Ile {
 			return plateau[coord.getX()][coord.getY()];
 		}else return new Parcelle();
 	}
-	
+	/**
+	 *  Méthode générale pour déplacer un personnage ou lui faire éxecuter une action
+	 */
 	public void deplacerPerso(){
 		grille.setJeu(jeu);
 		InputEvent e = grille.waitEvent();
@@ -48,7 +52,7 @@ public class Ile {
 		Personnage perso = null;
 		Navire navire = null;
 //------------SI BATEAU------------------------------------------------------
-		if(type.equals("navire")){
+		if(type.equals("navire") && (Ile.tour1 && getParcelle(coord) == navire1) || (Ile.tour2 && getParcelle(coord) == navire2)){
 			grille.setHighlight(coord.getX(), coord.getY());
 			navire = (Navire) getParcelle(coord);
 			String[] choix = new String[navire.getBateau().size()+1];
@@ -71,7 +75,12 @@ public class Ile {
 			perso = (Personnage) getParcelle(coord);
 			ok = true;
 		}
-		if(ok){
+		if(Ile.tour1 && ! navire1.getEquipe().contains(perso)){
+			ok = false;
+		}else if(Ile.tour2 && ! navire2.getEquipe().contains(perso)){
+			ok = false;
+		}
+		if(ok && ! perso.getaJoue()){
 			InputEvent dest = grille.waitEvent();
 			Coordonee destination = new Coordonee(grille.getX((MouseEvent) dest), grille.getY((MouseEvent) dest));
 			
@@ -113,9 +122,9 @@ public class Ile {
 			
 				}else if(perso.getType().equals("voleur")){
 					
-					if(getParcelle(destination).getType().equals("explorateur")){
+					if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")){
 						if (! perso.memeEquipe((Personnage) getParcelle(destination))){
-							Explorateur cible = (Explorateur) getParcelle(destination);
+							Personnage cible = (Personnage) getParcelle(destination);
 							perso.voler(cible);
 							perso.retirerEnergie(10);
 						}else JOptionPane.showMessageDialog(null, "Ce personnage est dans votre équipe, ne tentez pas de le dérober !");
@@ -147,17 +156,17 @@ public class Ile {
 						}
 					}
 				}
+				perso.setaJoue(true);
 			}
 		}
 		grille.clearHighlight();
 	}
 	
-	
-	public Navire getNavire1() {
+	public static Navire getNavire1() {
 		return navire1;
 	}
 
-	public Navire getNavire2() {
+	public static Navire getNavire2() {
 		return navire2;
 	}
 	public void remplirEnergie(){

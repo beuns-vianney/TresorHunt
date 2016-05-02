@@ -29,7 +29,7 @@ public class Jeu {
 	//	jeu.placerExplo(va, xa);
 	//	jeu.display();
 		while(! Ile.fin){
-			jeu.Menu();
+			// jeu.Menu();
 			jeu.display();
 			jeu.deplacerPerso();
 			jeu.display();

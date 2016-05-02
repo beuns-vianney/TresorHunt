@@ -54,6 +54,11 @@ public class Navire extends Parcelle {
 			p.setNavire(this);
 		}
 	}
+	/**
+	 * Teste l'appartenance d'un personnage à une équipe.
+	 * @param p   Le personnage testé
+	 * @return		retourne vrai si le personnage testé est dans l'équipe
+	 */
 	public boolean estDansLEquipe(Personnage p){
 		if(equipe.contains(p)){
 			return true;
@@ -71,6 +76,12 @@ public class Navire extends Parcelle {
 	public void refillEnergie(){
 		for(Personnage p : bateau){
 			p.ajouterEnergie(10);
+		}
+	}
+	
+	public void resetTurns(){
+		for(Personnage p : this.equipe){
+			p.setaJoue(false);
 		}
 	}
 /**

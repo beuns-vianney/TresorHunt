@@ -24,19 +24,20 @@ public class Voleur extends Personnage{
 		if(type.equals("sable")) return true;
 		else if(type.equals("navire")) return true;
 		else if(type.equals("explorateur")) return true;
+		else if(type.equals("voleur")) return true;
 		else if(type.equals("mer"))return true;
 		return false;
 		} return false;
 	}
-	public void voler(Explorateur e){
+	public void voler(Personnage e){
 		if(e.getKey()){
 			this.setKey(true);
 			e.setKey(false);
-			JOptionPane.showMessageDialog(null, "Vous venez de dérober la clé.");
+			JOptionPane.showMessageDialog(null, "Vous venez de dï¿½rober la clï¿½.");
 		}else if(e.getChest()){
 			this.setChest(true);
 			e.setChest(false);
-			JOptionPane.showMessageDialog(null, "Vous venez de dérober le trésor.");
+			JOptionPane.showMessageDialog(null, "Vous venez de dï¿½rober le trï¿½sor.");
 		}else {
 			JOptionPane.showMessageDialog(null, "Cet explorateur n'avait aucun objet sur lui.");
 		}

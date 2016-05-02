@@ -13,6 +13,7 @@ abstract public class Personnage extends Parcelle{
 	private boolean chest = false;
 	private Coordonee coord;
 	private Navire navire;
+	private boolean aJoue = false;
 	
 	public Personnage(String type){
 		this.energie = 100;
@@ -101,5 +102,13 @@ abstract public class Personnage extends Parcelle{
 
 	public void setNavire(Navire navire) {
 		this.navire = navire;
+	}
+
+	public boolean getaJoue() {
+		return aJoue;
+	}
+
+	public void setaJoue(boolean aJoue) {
+		this.aJoue = aJoue;
 	}
 }

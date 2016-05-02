@@ -1,13 +1,18 @@
 package plateau;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+
+import parcelle.Ile;
 
 /**
  * La classe Plateau permet d'afficher un plateau de Jeu carré
@@ -93,6 +98,7 @@ public class Plateau {
 		// Instancie la fenetre principale et et les deux composants.
 		window = new JFrame() ;
 		graphic = new GraphicPane(gif, taille) ;
+		JButton passeB = new JButton("Passer son tour");
 		console = null ;
 
 		// Caractéristiques initiales pour la fenetre.
@@ -105,12 +111,31 @@ public class Plateau {
 
 		// Ajout des deux composants à la fenetre
 		window.getContentPane().add(graphic, BorderLayout.NORTH);
+		window.getContentPane().add(passeB, BorderLayout.SOUTH);
 		if (withTextArea) {
 			console = new ConsolePane() ;
 			window.getContentPane().add(console) ;
 		}
 		resizeFromGraphic() ;
+		passeB.addActionListener(new ActionListener(){
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(Ile.tour1){
+					Ile.tour1 = false;
+					Ile.tour2 = true;
+					System.out.println("Tour joueur 2");
+				}else {
+					Ile.tour1 = true;
+					Ile.tour2 = false;
+					System.out.println("Tour joueur 1");
+				}
+				Ile.getNavire1().resetTurns();
+				Ile.getNavire2().resetTurns();
+			}
+			
+		});
 		// Affichage effectif 
 		window.setVisible(true);
 		// Ajout des listeners.
@@ -250,6 +275,7 @@ public class Plateau {
 		} else {
 			dim.height += 150 ;
 		}
+		dim.height += 15;
 		window.getContentPane().setPreferredSize(dim) ;
 		window.pack() ;
 	}

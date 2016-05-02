@@ -1,7 +1,7 @@
 package parcelle;
 
 import coordonee.Coordonee;
-import personnage.Explorateur;
+import personnage.Personnage;
 
 /**
  * Parcelle est la classe représentant une parcelle de terrain.
@@ -30,8 +30,8 @@ public class Parcelle {
 	public void souleverRoche(Roche r){
 		this.souleverRoche(r);
 	}
-	public void voler(Explorateur e){
-		this.voler(e);
+	public void voler(Personnage cible){
+		this.voler(cible);
 	}
 	/**
 	 * 
