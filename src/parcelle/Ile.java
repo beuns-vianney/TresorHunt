@@ -18,11 +18,14 @@ import plateau.Plateau;
 
 public class Ile {
 	private	String[] img = new String[]{"images/rocher.png", "images/mer.png",
-			"images/1.navire.png","images/2.navire.png","images/1.explorateur.png", "images/coffre.png", "images/1.piegeur.png", "images./sable.png"};
-	private Parcelle[][] plateau;
-	private int size;
-	private int[][] jeu;
-	private Plateau grille;
+			"images/2.navire.png","images/1.navire.png","images/1.explorateur.png",
+			"images/coffre.png", "images/1.piegeur.png", "images./sable.png", 
+			"images/2.explorateur.png", "images/brouillardMer.png", "images/brouillardSable.png",
+			"images/2.voleur.png", "images/explorateurmer.png", "images/voleur1mer.png", "images/voleurmer.png"};
+	private static Parcelle[][] plateau;
+	private static int size;
+	private static int[][] jeu;
+	private static Plateau grille1;
 	private static Navire navire1;
 	private static Navire navire2;
 	public static boolean fin = false;
@@ -35,7 +38,7 @@ public class Ile {
 	 * @return La parcelle ciblée du plateau de jeu
 	 */
 	public Parcelle getParcelle(Coordonee coord){
-		if(coord.getX() >= 0 || coord.getX() <= this.size -1 || coord.getY() >= 0 || coord.getY() <= this.size -1){
+		if(coord.getX() >= 0 || coord.getX() <= size -1 || coord.getY() >= 0 || coord.getY() <= size -1){
 			return plateau[coord.getX()][coord.getY()];
 		}else return new Parcelle();
 	}
@@ -43,9 +46,9 @@ public class Ile {
 	 *  Méthode générale pour déplacer un personnage ou lui faire éxecuter une action
 	 */
 	public void deplacerPerso(){
-		grille.setJeu(jeu);
-		InputEvent e = grille.waitEvent();
-		Coordonee coord = new Coordonee(grille.getX((MouseEvent) e), grille.getY((MouseEvent) e));
+		grille1.setJeu(jeu);
+		InputEvent e = grille1.waitEvent();
+		Coordonee coord = new Coordonee(grille1.getX((MouseEvent) e), grille1.getY((MouseEvent) e));
 		String type = getParcelle(coord).getType();
 		boolean ok = false;
 		boolean bateau = false;
@@ -53,7 +56,7 @@ public class Ile {
 		Navire navire = null;
 //------------SI BATEAU------------------------------------------------------
 		if(type.equals("navire") && (Ile.tour1 && getParcelle(coord) == navire1) || (Ile.tour2 && getParcelle(coord) == navire2)){
-			grille.setHighlight(coord.getX(), coord.getY());
+			grille1.setHighlight(coord.getX(), coord.getY());
 			navire = (Navire) getParcelle(coord);
 			String[] choix = new String[navire.getBateau().size()+1];
 			for(int i = 0; i<navire.getBateau().size(); i++){
@@ -71,18 +74,18 @@ public class Ile {
 		}else
 //------------------------------------SI PERSONNAGE-----------------------------------------------
 		if(type.equals("explorateur") || type.equals("voleur")){
-			grille.setHighlight(coord.getX(), coord.getY());
+			grille1.setHighlight(coord.getX(), coord.getY());
 			perso = (Personnage) getParcelle(coord);
 			ok = true;
 		}
-		if(Ile.tour1 && ! navire1.getEquipe().contains(perso)){
+		if(Ile.tour1 && ! navire1.estDansLEquipe(perso)){
 			ok = false;
-		}else if(Ile.tour2 && ! navire2.getEquipe().contains(perso)){
+		}else if(Ile.tour2 && ! navire2.estDansLEquipe(perso)){
 			ok = false;
 		}
 		if(ok && ! perso.getaJoue()){
-			InputEvent dest = grille.waitEvent();
-			Coordonee destination = new Coordonee(grille.getX((MouseEvent) dest), grille.getY((MouseEvent) dest));
+			InputEvent dest = grille1.waitEvent();
+			Coordonee destination = new Coordonee(grille1.getX((MouseEvent) dest), grille1.getY((MouseEvent) dest));
 			
 
 			if(perso.deplacer(getParcelle(destination).getType(), coord, destination)){
@@ -97,26 +100,36 @@ public class Ile {
 						Navire cible = (Navire) getParcelle(destination);
 						if(cible.estDansLEquipe(perso)){
 							cible.addPersoBateau(perso);	
-							if(coord.getX() > 0 && coord.getX() < this.size-1 && coord.getY() > 0 && coord.getY() < this.size-1){
-								this.plateau[coord.getX()][coord.getY()] = new Sable(); 
+							if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+								plateau[coord.getX()][coord.getY()] = new Sable(); 
 							}else if( ! bateau){
-								this.plateau[coord.getX()][coord.getY()] = new Mer(); 
+								plateau[coord.getX()][coord.getY()] = new Mer(); 
 							}
 						}else {
 							JOptionPane.showMessageDialog(null, "Ce n'est pas votre bateau !");
+						}
+					}else if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")){
+						Personnage cible = (Personnage) getParcelle(destination);
+						if(perso.memeEquipe(cible)){
+							perso.Donner(cible);
+						}else{
+							JOptionPane.showMessageDialog(null, "Ce joueur ne fait pas partit de votre équipe !");
 						}
 					
 					}else{
 						plateau[destination.getX()][destination.getY()] = perso;
 						perso.setCoord(destination);
 						perso.retirerEnergie(1);
+						if(getNavire1().estDansLEquipe(perso)){
+							getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
+						}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
 						if(bateau){
 							navire.rmPersoB(perso);
 						}
-						if(coord.getX() > 0 && coord.getX() < this.size-1 && coord.getY() > 0 && coord.getY() < this.size-1){
-							this.plateau[coord.getX()][coord.getY()] = new Sable(); 
+						if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+							plateau[coord.getX()][coord.getY()] = new Sable(); 
 						}else if(! bateau){
-							this.plateau[coord.getX()][coord.getY()] = new Mer(); 
+							plateau[coord.getX()][coord.getY()] = new Mer(); 
 						}
 					}
 			
@@ -127,16 +140,19 @@ public class Ile {
 							Personnage cible = (Personnage) getParcelle(destination);
 							perso.voler(cible);
 							perso.retirerEnergie(10);
-						}else JOptionPane.showMessageDialog(null, "Ce personnage est dans votre équipe, ne tentez pas de le dérober !");
+						}else{
+							Personnage cible = (Personnage) getParcelle(destination);
+							perso.Donner(cible);
+						}
 					
 					}else if(getParcelle(destination).getType().equals("navire")){
 						Navire cible = (Navire) getParcelle(destination);
 						if(cible.estDansLEquipe(perso)){
 							cible.addPersoBateau(perso);	
-							if(coord.getX() > 0 && coord.getX() < this.size-1 && coord.getY() > 0 && coord.getY() < this.size-1){
-								this.plateau[coord.getX()][coord.getY()] = new Sable(); 
+							if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+								plateau[coord.getX()][coord.getY()] = new Sable(); 
 							}else if (!bateau){
-								this.plateau[coord.getX()][coord.getY()] = new Mer(); 
+								plateau[coord.getX()][coord.getY()] = new Mer(); 
 							}
 						}else {
 							JOptionPane.showMessageDialog(null, "Ce n'est pas votre bateau !");
@@ -146,20 +162,23 @@ public class Ile {
 						plateau[destination.getX()][destination.getY()] = perso;
 						perso.setCoord(destination);
 						perso.retirerEnergie(1);
+						if(getNavire1().estDansLEquipe(perso)){
+							getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
+						}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
 						if(bateau){
 							navire.rmPersoB(perso);
 						}
-						if(coord.getX() > 0 && coord.getX() < this.size-1 && coord.getY() > 0 && coord.getY() < this.size-1){
-							this.plateau[coord.getX()][coord.getY()] = new Sable(); 
+						if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+							plateau[coord.getX()][coord.getY()] = new Sable(); 
 						}else if(! bateau){
-							this.plateau[coord.getX()][coord.getY()] = new Mer(); 
+							plateau[coord.getX()][coord.getY()] = new Mer(); 
 						}
 					}
 				}
 				perso.setaJoue(true);
 			}
 		}
-		grille.clearHighlight();
+		grille1.clearHighlight();
 	}
 	
 	public static Navire getNavire1() {
@@ -178,7 +197,7 @@ public class Ile {
 	 *  @return la taille du plateau (longeur ou largeur)
 	 */
 	public int getSize(){
-		return this.size;
+		return size;
 	}
 	/**
 	 * Place un Explorateur quelconque sur le terrain
@@ -187,7 +206,7 @@ public class Ile {
 	 */
 	public void placerExplo(int x, int y){
 		plateau[x][y] = new Explorateur(new Coordonee(x, y));
-		this.plateau[x][y].setCord(new Coordonee(x, y));
+		plateau[x][y].setCord(new Coordonee(x, y));
 	}
 	
 	/**
@@ -197,11 +216,11 @@ public class Ile {
 	 * @param rocRate   taux de roches
 	 */
 	public Ile(int taille, int rocRate){
-		this.grille = new Plateau(img, this.size);
-		this.size = taille;
+		grille1 = new Plateau(img, size);
+		size = taille;
 		Random r = new Random();
-		this.plateau = new Parcelle[taille][taille];
-		this.jeu = new int[this.size][this.size];
+		plateau = new Parcelle[taille][taille];
+		jeu = new int[size][size];
 		for(int i = 0; i<taille; i++){
 			for(int j=0; j<taille; j++){
 				if(i ==0 || j==0 || i == taille-1 || j==taille-1){
@@ -214,7 +233,11 @@ public class Ile {
 		int n1 = r.nextInt(taille-2) + 1;
 		int n2 = r.nextInt(taille-2) + 1;
 		plateau[n1][0] = new Navire();
+		navire1 = (Navire) plateau[n1][0];
+		Ile.getNavire1().initPlateau(n1, 0, taille);
 		plateau[n2][taille-1] = new Navire();
+		navire2 = (Navire) plateau[n2][taille-1];
+		Ile.getNavire2().initPlateau(n2, taille-1, taille);
 		int rate = (int)((taille*taille)*(double)rocRate/100);
 		boolean done = false;
 		for(int y =0; y<rate; y++){
@@ -237,17 +260,6 @@ public class Ile {
 				}
 				done = false;
 			}
-		for(int i = 0; i<size; i++){
-			for(int j = 0; j<size; j++){
-				if(plateau[i][j].getType().equals("navire")){
-					if(j == 0){
-						navire1 = (Navire) plateau[i][j];
-					}else{
-						navire2 = (Navire) plateau[i][j];	
-					}
-				}
-			}
-		}
 	}
 	
 	public String toString() {
@@ -297,7 +309,7 @@ public class Ile {
 		try{
 			String v = JOptionPane.showInputDialog(null, "Saisissez sur quelle ligne vous voulez placer l'explorateur");
 			va = Integer.parseInt(v);
-			if(va >= this.size){
+			if(va >= size){
 				System.out.println("Emplacement non valide, placement sur la ligne 0.");
 				va = 0;
 			}
@@ -308,7 +320,7 @@ public class Ile {
 		try{
 			String x = JOptionPane.showInputDialog(null, "Ainsi que la colone.");
 			xa = Integer.parseInt(x);
-			if(xa >= this.size){
+			if(xa >= size){
 				System.out.println("Emplacement non valide, placement sur la colonne 0.");
 				xa = 0;
 			}
@@ -378,34 +390,113 @@ public class Ile {
 	/**
 	 * Affichage graphique du plateau avec Plateau
 	 */
-	public void display(){
-		for(int i = 0; i<this.size;i++){
-			for(int j = 0; j<this.size; j++){
-				if(plateau[i][j].getType().equals("explorateur")){
-					jeu[j][i] = 5;
-				}else if(plateau[i][j].getType().equals("voleur")){
-					jeu[j][i] = 7;
-				}else if(plateau[i][j].getType().equals("roche")){
-					if(plateau[i][j].isRevealed() && plateau[i][j].getChest()){
-						jeu[j][i] = 6;
-					}else {
-						jeu[j][i] = 1;
+	public static void display(){
+		grille1.PlateauRename();
+		if(Ile.tour1){
+			for(int i = 0; i<size;i++){
+				for(int j = 0; j<size; j++){
+					if(! Ile.getNavire1().getVisible(i, j)){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1)
+							jeu[j][i] = 10;
+						else jeu[j][i] = 11;
+					}else 
+					if(plateau[i][j].getType().equals("explorateur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 5;
+						}else{
+							//À changer lorsque tous les sprites seront là.
+							jeu[j][i] = 5;
+						}
+					}else if(plateau[i][j].getType().equals("explorateur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 13;
+						}else{
+							jeu[j][i] = 9;
+						}
+					}else if(plateau[i][j].getType().equals("voleur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 14;
+						}else{
+							jeu[j][i] = 7;
+						}
+					}else if(plateau[i][j].getType().equals("voleur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 15;
+						}else{
+							jeu[j][i] = 12;
+						}	
+					}else if(plateau[i][j].getType().equals("roche")){
+						if(plateau[i][j].isRevealed() && plateau[i][j].getChest()){
+							jeu[j][i] = 6;
+						}else {
+							jeu[j][i] = 1;
+						}
+					}else if(plateau[i][j].getType().equals("mer")){
+						jeu[j][i] = 2;
+					}else if(plateau[i][j].getType().equals("navire") && j == 0){
+						jeu[j][i] = 3;
+					}else if(plateau[i][j].getType().equals("navire") && j == size-1){
+						jeu[j][i] = 4;
+					}else{
+						jeu[j][i] = 8;
 					}
-				}else if(plateau[i][j].getType().equals("mer")){
-					jeu[j][i] = 2;
-				}else if(plateau[i][j].getType().equals("navire") && j == 0){
-					jeu[j][i] = 3;
-				}else if(plateau[i][j].getType().equals("navire") && j == this.size-1){
-					jeu[j][i] = 4;
-				}else{
-					jeu[j][i] = 8;
 				}
 			}
+			grille1.setJeu(jeu);
+			grille1.affichage();
+		}else{
+			for(int i = 0; i<size;i++){
+				for(int j = 0; j<size; j++){
+					if(! Ile.getNavire2().getVisible(i, j)){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1)
+							jeu[j][i] = 10;
+						else jeu[j][i] = 11;
+					}else 
+						if(plateau[i][j].getType().equals("explorateur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+							if(i == 0 || j == 0 || i == size-1 || j == size-1){
+								jeu[j][i] = 5;
+							}else{
+								jeu[j][i] = 5;
+							}
+						}else if(plateau[i][j].getType().equals("explorateur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+							if(i == 0 || j == 0 || i == size-1 || j == size-1){
+								jeu[j][i] = 13;
+							}else{
+								jeu[j][i] = 9;
+							}
+					}else if(plateau[i][j].getType().equals("voleur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 14;
+						}else{
+							jeu[j][i] = 7;
+						}
+					}else if(plateau[i][j].getType().equals("voleur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 15;
+						}else{
+							jeu[j][i] = 12;
+						}					
+					}else if(plateau[i][j].getType().equals("roche")){
+						if(plateau[i][j].isRevealed() && plateau[i][j].getChest()){
+							jeu[j][i] = 6;
+						}else {
+							jeu[j][i] = 1;
+						}
+					}else if(plateau[i][j].getType().equals("mer")){
+						jeu[j][i] = 2;
+					}else if(plateau[i][j].getType().equals("navire") && j == 0){
+						jeu[j][i] = 3;
+					}else if(plateau[i][j].getType().equals("navire") && j == size-1){
+						jeu[j][i] = 4;
+					}else{
+						jeu[j][i] = 8;
+					}
+				}
+			}
+			grille1.setJeu(jeu);
+			grille1.affichage();
 		}
-		grille.setJeu(jeu);
-		grille.affichage();
-	}
-			
+	}	
 }
 		
 		

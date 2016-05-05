@@ -1,5 +1,7 @@
 package personnage;
 
+import javax.swing.JOptionPane;
+
 import coordonee.Coordonee;
 import parcelle.Navire;
 import parcelle.Parcelle;
@@ -41,6 +43,36 @@ abstract public class Personnage extends Parcelle{
 		this.type = type;
 		this.coord = coord;
 	}
+	public void Donner(Personnage p){
+		if(! this.chest && !this.key){
+			JOptionPane.showMessageDialog(null, "Vous n'avez aucun objet à donner.");
+		}else if(this.chest && !this.key){
+			int r = JOptionPane.showOptionDialog(null, "Voulez-vous donner votre trésor à ce personnage ?", "Altruisme", JOptionPane.NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null,new String[]{"Oui", "Non"}, 1);
+			if(r == 0){
+				p.setChest(true);
+				this.setChest(false);
+			}
+		}else if(this.key && !this.chest){
+			int r = JOptionPane.showOptionDialog(null, "Voulez-vous donner votre clé à ce personnage ?", "Altruisme", JOptionPane.NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null,new String[]{"Oui", "Non"}, 1);
+			if(r == 0){
+				p.setKey(true);
+				this.setKey(false);
+			}
+		}else if(this.key && this.chest){
+			int r = JOptionPane.showOptionDialog(null, "Que voulez-vous donner à ce personnage ?", "Altruisme", JOptionPane.NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null,new String[]{"Clé", "Coffre", "Rien"}, 2);
+			if(r == 0){
+				p.setKey(true);
+				this.setKey(false);			
+			}else if(r == 1){
+				p.setChest(true);
+				this.setChest(false);
+			}
+		}
+	}
+	
 	public Coordonee getCoord() {
 		return coord;
 	}

@@ -102,16 +102,11 @@ public class Plateau {
 		console = null ;
 
 		// Caractéristiques initiales pour la fenetre.
-		if(Ile.tour1){
-			window.setTitle("Plateau de jeu de l'équipe 1.");
-		}else{
-			window.setTitle("Plateau de jeu de l'équipe 2.");
-		}
-		window.setLocationRelativeTo(null);
+		
 		window.setLayout(new BorderLayout());
 		// La fermeture de la fenetre ne fait que la cacher. 
 		// cf Javadoc setDefaultCloseOperation
-		window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Ajout des deux composants à la fenetre
 		window.getContentPane().add(graphic, BorderLayout.NORTH);
@@ -121,6 +116,7 @@ public class Plateau {
 			window.getContentPane().add(console) ;
 		}
 		resizeFromGraphic() ;
+		window.setLocationRelativeTo(null);
 		passeB.addActionListener(new ActionListener(){
 
 			@Override
@@ -137,6 +133,7 @@ public class Plateau {
 				}
 				Ile.getNavire1().resetTurns();
 				Ile.getNavire2().resetTurns();
+				Ile.display();
 			}
 			
 		});
@@ -146,6 +143,14 @@ public class Plateau {
 		graphic.addMouseListener(new Mouse());
 		window.addKeyListener(new Key()) ;
 		currentEvent = null ;
+	}
+	
+	public void PlateauRename(){
+		if(Ile.tour1){
+			window.setTitle("Plateau de jeu de l'�quipe 1");
+		}else{
+			window.setTitle("Plateau de jeu de l'�quipe 2");
+		}
 	}
 	/**
 	 * Méthode permettant de placer les éléments sur le plateau. Le tableau doit être  
