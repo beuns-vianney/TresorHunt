@@ -113,6 +113,9 @@ public class Navire extends Parcelle {
 	public boolean getVisible(int x, int y){
 		return this.visible[x][y];
 	}
+	/**
+	 * Cette méthode permet de définir la constitution des équipes.
+	 */
 	public void creerEquipe(){
 		while(this.equipe.size() < 10){
 			int rep = JOptionPane.showOptionDialog(null, "Quel personnage voulez-vous ajouter à votre équipe ?", 
