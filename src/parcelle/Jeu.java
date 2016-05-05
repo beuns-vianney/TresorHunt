@@ -21,7 +21,7 @@ public class Jeu {
 			ra = 10;
 		}
 		Ile jeu = new Ile(ta, ra);
-		jeu.display();
+		Ile.display();
 	//	String v = JOptionPane.showInputDialog(null, "Saisissez sur quelle ligne vous voulez placer l'explorateur");
 	//	String x = JOptionPane.showInputDialog(null, "Ainsi que la colone.");
 	//	int va = Integer.parseInt(v);
@@ -30,9 +30,8 @@ public class Jeu {
 	//	jeu.display();
 		while(! Ile.fin){
 			// jeu.Menu();
-			jeu.display();
 			jeu.deplacerPerso();
-			jeu.display();
+			Ile.display();
 			jeu.remplirEnergie();
 		}
 	}

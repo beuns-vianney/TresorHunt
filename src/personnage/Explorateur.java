@@ -19,10 +19,12 @@ public class Explorateur extends Personnage{
 	}
 	public boolean deplacer(String type, Coordonee coord, Coordonee dest){
 		if(dest.equals(coord.aDroite(coord)) || dest.equals(coord.aGauche(coord)) || dest.equals(coord.enBas(coord))|| dest.equals(coord.enHaut(coord))){
-			if(type.equals("roche")) return true;
-			else if(type.equals("sable")) return true;
-			else if(type.equals("navire")) return true;
-			else if(type.equals("mer"))return true;
+			if(type.equals("roche") ||
+					type.equals("sable") ||
+					type.equals("navire") ||
+					type.equals("mer") || 
+					type.equals("voleur") ||
+					type.equals("explorateur")) return true;
 			else return false;
 		}else return false;
 	}

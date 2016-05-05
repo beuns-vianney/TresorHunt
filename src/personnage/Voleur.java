@@ -21,11 +21,11 @@ public class Voleur extends Personnage{
 	public boolean deplacer(String type, Coordonee coord, Coordonee dest) {
 		if(dest.equals(coord.aDroite(coord)) || dest.equals(coord.aGauche(coord)) || dest.equals(coord.enBas(coord))|| dest.equals(coord.enHaut(coord)) || dest.equals(coord.basDroit(coord))
 				|| dest.equals(coord.basGauche(coord)) || dest.equals(coord.hautDroit(coord)) || dest.equals(coord.hautGauche(coord))){
-		if(type.equals("sable")) return true;
-		else if(type.equals("navire")) return true;
-		else if(type.equals("explorateur")) return true;
-		else if(type.equals("voleur")) return true;
-		else if(type.equals("mer"))return true;
+		if(type.equals("sable") 
+				|| type.equals("navire") 
+				|| type.equals("explorateur") 
+				|| type.equals("voleur") 
+				|| type.equals("mer")) return true;
 		return false;
 		} return false;
 	}

@@ -18,6 +18,7 @@ public class Navire extends Parcelle {
 	private final int ID;
 	private ArrayList<Personnage> equipe = new ArrayList<Personnage>();
 	private ArrayList<Personnage> bateau;
+	private boolean[][] visible;
 	/**
 	 * Type de Parcelle
 	 */
@@ -31,6 +32,86 @@ public class Navire extends Parcelle {
 		Navire.indice++;
 		this.ID = indice;
 		this.creerEquipe();
+	}
+	
+	public void initPlateau(int x, int y, int taille){
+		this.visible = new boolean[taille][taille];
+		for(int i = 0; i<taille; i++){
+			for(int j = 0; j<taille; j++){
+				this.visible[i][j] = false;
+			}
+		}
+		this.visible[x][y] = true;
+		this.visible[x-1][y] = true;
+		this.visible[x+1][y] = true;
+		if(y == 0){
+			this.visible[x][y+1] = true;
+			this.visible[x+1][y+1] = true;
+			this.visible[x-1][y+1] = true;
+		}else if(y == taille-1){
+			this.visible[x][y-1] = true;
+			this.visible[x+1][y-1] = true;
+			this.visible[x-1][y-1] = true;
+		}
+
+	}
+	public void updateBrouillard(int x, int y, int taille){
+		if(x > 0 && x<taille-1 && (y > 0 && y < taille-1)){
+			this.visible[x-1][y] = true;
+			this.visible[x-1][y+1] = true;
+			this.visible[x-1][y-1] = true;
+			this.visible[x][y] = true;
+			this.visible[x][y+1] = true;
+			this.visible[x][y-1] = true;
+			this.visible[x+1][y] = true;
+			this.visible[x+1][y+1] = true;
+			this.visible[x+1][y-1] = true;
+		}else if (x == taille-1){
+			if(y > 0){
+				this.visible[x-1][y-1] = true;
+				this.visible[x][y-1] = true;
+			}if(y < taille-1){
+				this.visible[x-1][y+1] = true;
+				this.visible[x][y+1] = true;
+			}
+			this.visible[x-1][y] = true;
+			this.visible[x][y] = true;
+		}else if (x == 0 && (y > 0 && y < taille-1)){
+			if(y>0){
+				this.visible[x][y-1] = true;
+				this.visible[x+1][y-1] = true;
+			}if(y < taille-1){
+				this.visible[x][y+1] = true;
+				this.visible[x+1][y+1] = true;
+			}
+			this.visible[x][y] = true;
+			this.visible[x+1][y] = true;
+		}else if (y == 0 && (x > 0 && x < taille-1)){
+			if(x>0){
+				this.visible[x-1][y] = true;
+				this.visible[x-1][y+1] = true;				
+			}if(x < taille-1){
+				this.visible[x+1][y] = true;
+				this.visible[x+1][y+1] = true;				
+			}
+			this.visible[x][y] = true;
+			this.visible[x][y+1] = true;
+		}else if (y == taille-1 && (x > 0 && x < taille-1)){
+			if(x>0){
+				this.visible[x-1][y] = true;
+				this.visible[x-1][y-1] = true;				
+			}if(x < taille-1){
+				this.visible[x+1][y] = true;
+				this.visible[x+1][y-1] = true;				
+			}
+			this.visible[x][y] = true;
+			this.visible[x][y-1] = true;
+		}
+	}
+		
+	
+	public boolean getVisible(int x, int y){
+		return this.visible[x][y];
 	}
 	public void creerEquipe(){
 		while(this.equipe.size() < 10){
