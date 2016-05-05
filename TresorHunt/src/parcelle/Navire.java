@@ -186,6 +186,10 @@ public class Navire extends Parcelle {
 	public ArrayList<Personnage> getBateau() {
 		return bateau;
 	}
+	/**
+	 * Ajoute un personnage à une équipe.
+	 * @param p
+	 */
 	public void addPersoEquipe(Personnage p){
 		equipe.add(p);
 	}
