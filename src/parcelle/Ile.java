@@ -404,6 +404,7 @@ public class Ile {
 						if(i == 0 || j == 0 || i == size-1 || j == size-1){
 							jeu[j][i] = 5;
 						}else{
+							//À changer lorsque tous les sprites seront là.
 							jeu[j][i] = 5;
 						}
 					}else if(plateau[i][j].getType().equals("explorateur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
