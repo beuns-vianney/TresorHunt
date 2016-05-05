@@ -298,7 +298,7 @@ public class Ile {
 	}
 	/**
 	 * Méthode affichant le menu d'interaction avec les joueurs. Il permet de choisir les actions que le 
-	 * joueur veut réaliser
+	 * joueur veut réaliser.
 	 */
 	public void Menu(){
 		int rep = JOptionPane.showOptionDialog(null, "Que voulez-vous faire ?", 
