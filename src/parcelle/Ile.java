@@ -19,7 +19,7 @@ import plateau.Plateau;
 public class Ile {
 	private	String[] img = new String[]{"images/rocher.png", "images/mer.png",
 			"images/2.navire.png","images/1.navire.png","images/1.explorateur.png",
-			"images/coffre.png", "images/1.piegeur.png", "images./sable.png", 
+			"images/coffre.png", "images/1.voleur.png", "images./sable.png", 
 			"images/2.explorateur.png", "images/brouillardMer.png", "images/brouillardSable.png",
 			"images/2.voleur.png", "images/explorateurmer.png", "images/voleur1mer.png", "images/voleurmer.png"};
 	private static Parcelle[][] plateau;
@@ -405,16 +405,18 @@ public class Ile {
 		}
 	}
 	public void Inventaire(Personnage p){
-		grille1.println("---------------"+p+"----------------");
-		grille1.println("Energie : " + p.getEnergie() + "/100");
-		if(p.getChest()){
-			grille1.println("Ce personnage a le coffre sur lui.");
+		if((Ile.tour1 && navire1.estDansLEquipe(p)) || (Ile.tour2 && navire2.estDansLEquipe(p))){
+			grille1.println("---------------"+p+"----------------");
+			grille1.println("Energie : " + p.getEnergie() + "/100");
+			if(p.getChest()){
+				grille1.println("Ce personnage a le coffre sur lui.");
+			}
+			if(p.getKey()){
+				grille1.println("Ce personnage a la clé sur lui.");
+			}
+			grille1.println("-------------------------------------");
+			grille1.println("");
 		}
-		if(p.getKey()){
-			grille1.println("Ce personnage a la clé sur lui.");
-		}
-		grille1.println("-------------------------------------");
-		grille1.println("");
 	}
 	/**
 	 * Affichage graphique du plateau avec Plateau
