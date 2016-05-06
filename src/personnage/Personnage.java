@@ -73,6 +73,13 @@ abstract public class Personnage extends Parcelle{
 		}
 	}
 	
+	public boolean estMort(){
+		if(energie <= 0){
+			return true;
+		}
+		return false;
+	}
+	
 	public Coordonee getCoord() {
 		return coord;
 	}

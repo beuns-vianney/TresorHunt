@@ -21,4 +21,10 @@ class ConsolePane extends JScrollPane {
 		JScrollBar vertical = this.getVerticalScrollBar() ;
 		vertical.setValue(vertical.getMaximum()) ;
 	}
+	
+	public void setText(String text) {
+        textArea.setText(text);
+    }
+	
+	
 }

@@ -49,7 +49,10 @@ public class Ile {
 		grille1.setJeu(jeu);
 		InputEvent e = grille1.waitEvent();
 		Coordonee coord = new Coordonee(grille1.getX((MouseEvent) e), grille1.getY((MouseEvent) e));
-		String type = getParcelle(coord).getType();
+		String type = "";
+		if(! (coord.getX() >= size) && ! (coord.getY() >= size)){
+			type = getParcelle(coord).getType();
+		}
 		boolean ok = false;
 		boolean bateau = false;
 		Personnage perso = null;
@@ -68,6 +71,7 @@ public class Ile {
 					choix, choix.length-1);
 			if(rep != choix.length-1){
 				perso = navire.getBateau().get(rep);
+				this.Inventaire(perso);
 				ok = true;
 				bateau = true;
 			}
@@ -76,6 +80,7 @@ public class Ile {
 		if(type.equals("explorateur") || type.equals("voleur")){
 			grille1.setHighlight(coord.getX(), coord.getY());
 			perso = (Personnage) getParcelle(coord);
+			this.Inventaire(perso);
 			ok = true;
 		}
 		if(Ile.tour1 && ! navire1.estDansLEquipe(perso)){
@@ -176,6 +181,18 @@ public class Ile {
 					}
 				}
 				perso.setaJoue(true);
+				if(perso.estMort()){
+					if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+						plateau[coord.getX()][coord.getY()] = new Sable(); 
+					}else if(! bateau){
+						plateau[coord.getX()][coord.getY()] = new Mer(); 
+					}
+					if(perso.getChest()){
+						getParcelle(coord).setChest(true);
+					}else if(perso.getKey()){
+						getParcelle(coord).setKey(true);
+					}
+				}
 			}
 		}
 		grille1.clearHighlight();
@@ -216,7 +233,7 @@ public class Ile {
 	 * @param rocRate   taux de roches
 	 */
 	public Ile(int taille, int rocRate){
-		grille1 = new Plateau(img, size);
+		grille1 = new Plateau(img, size, true);
 		size = taille;
 		Random r = new Random();
 		plateau = new Parcelle[taille][taille];
@@ -387,6 +404,18 @@ public class Ile {
 			}
 		}
 	}
+	public void Inventaire(Personnage p){
+		grille1.println("---------------"+p+"----------------");
+		grille1.println("Energie : " + p.getEnergie() + "/100");
+		if(p.getChest()){
+			grille1.println("Ce personnage a le coffre sur lui.");
+		}
+		if(p.getKey()){
+			grille1.println("Ce personnage a la clé sur lui.");
+		}
+		grille1.println("-------------------------------------");
+		grille1.println("");
+	}
 	/**
 	 * Affichage graphique du plateau avec Plateau
 	 */
@@ -437,6 +466,11 @@ public class Ile {
 						jeu[j][i] = 3;
 					}else if(plateau[i][j].getType().equals("navire") && j == size-1){
 						jeu[j][i] = 4;
+					}else if(plateau[i][j].getChest()){
+						jeu[j][i] = 6;
+					}else if(plateau[i][j].getKey()){
+						//A changer par sprite de la clé sur le sable
+						jeu[j][i] = 8;
 					}else{
 						jeu[j][i] = 8;
 					}

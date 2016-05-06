@@ -1,4 +1,5 @@
 package plateau;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -11,7 +12,6 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-
 import parcelle.Ile;
 
 /**
@@ -25,6 +25,7 @@ public class Plateau {
 	private JFrame window ;
 	private GraphicPane graphic ;
 	private ConsolePane console ;
+	private JButton passeB;
 	/**
 	 *  Attribut ou est enregistré un événement observé. Cet attribut est
 	 * initialisé à null au début de la scrutation et rempli par l'événement observé 
@@ -98,7 +99,7 @@ public class Plateau {
 		// Instancie la fenetre principale et et les deux composants.
 		window = new JFrame() ;
 		graphic = new GraphicPane(gif, taille) ;
-		JButton passeB = new JButton("Passer son tour");
+		passeB = new JButton("Passer son tour");
 		console = null ;
 
 		// Caractéristiques initiales pour la fenetre.
@@ -116,12 +117,12 @@ public class Plateau {
 			window.getContentPane().add(console) ;
 		}
 		resizeFromGraphic() ;
-		window.setLocationRelativeTo(null);
+		window.setLocation(500, 200);
+		window.setResizable(false);
 		passeB.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				if(Ile.tour1){
 					Ile.tour1 = false;
 					Ile.tour2 = true;
@@ -134,6 +135,7 @@ public class Plateau {
 				Ile.getNavire1().resetTurns();
 				Ile.getNavire2().resetTurns();
 				Ile.display();
+				setConsole("");
 			}
 			
 		});
@@ -331,4 +333,8 @@ public class Plateau {
 	public boolean isHighlight(int x, int y) {
 		return graphic.isHighlight(x, y) ;
 	}
+	
+	public void setConsole(String text) {
+        console.setText(text);
+    }
 }
