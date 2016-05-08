@@ -32,7 +32,6 @@ public class Jeu {
 			// jeu.Menu();
 			jeu.deplacerPerso();
 			Ile.display();
-			jeu.remplirEnergie();
 		}
 	}
 }

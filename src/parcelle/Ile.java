@@ -19,9 +19,12 @@ import plateau.Plateau;
 public class Ile {
 	private	String[] img = new String[]{"images/rocher.png", "images/mer.png",
 			"images/2.navire.png","images/1.navire.png","images/1.explorateur.png",
-			"images/coffre.png", "images/1.voleur.png", "images./sable.png", 
+			"images/coffre.jpg", "images/1.voleur.png", "images./sable.png", 
 			"images/2.explorateur.png", "images/brouillardMer.png", "images/brouillardSable.png",
-			"images/2.voleur.png", "images/explorateurmer.png", "images/voleur1mer.png", "images/voleurmer.png"};
+			"images/2.voleur.png", "images/explorateurmer.png", "images/voleur1mer.png", "images/voleurmer.png",
+			"images/1.explorateurMer.png", "images/cle.jpg", "images/1.piegeur.png", "images/1.piegeurMer.png", "images/2.piegeur.png",
+			"images/2.piegeurMer.png", "images/1.guerrier.png", "images/1.guerrierMer.png", "images/2.guerrier.png",
+			"images/2.guerrierMer.png"};
 	private static Parcelle[][] plateau;
 	private static int size;
 	private static int[][] jeu;
@@ -77,7 +80,7 @@ public class Ile {
 			}
 		}else
 //------------------------------------SI PERSONNAGE-----------------------------------------------
-		if(type.equals("explorateur") || type.equals("voleur")){
+		if(type.equals("explorateur") || type.equals("voleur") || type.equals("piegeur") || type.equals("guerrier")){
 			grille1.setHighlight(coord.getX(), coord.getY());
 			perso = (Personnage) getParcelle(coord);
 			this.Inventaire(perso);
@@ -94,12 +97,19 @@ public class Ile {
 			
 
 			if(perso.deplacer(getParcelle(destination).getType(), coord, destination)){
+				//---------------EXPLORATEUR--------------------------------------------------
 				if(perso.getType().equals("explorateur")){
 				
 					if(getParcelle(destination).getType().equals("roche")){
 						Roche cible = (Roche) getParcelle(destination);
+						if(cible.isPiege()){
+							perso.retirerEnergie(35);
+							this.mort(perso, coord, bateau);
+							cible.resetPiege();
+						}
 						perso.souleverRoche((Roche)cible);
 						perso.retirerEnergie(5);
+						this.mort(perso, coord, bateau);
 				
 					}else if(getParcelle(destination).getType().equals("navire")){
 						Navire cible = (Navire) getParcelle(destination);
@@ -113,18 +123,33 @@ public class Ile {
 						}else {
 							JOptionPane.showMessageDialog(null, "Ce n'est pas votre bateau !");
 						}
-					}else if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")){
+					}else if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")
+							|| getParcelle(destination).getType().equals("piegeur") || getParcelle(destination).getType().equals("guerrier")){
 						Personnage cible = (Personnage) getParcelle(destination);
 						if(perso.memeEquipe(cible)){
 							perso.Donner(cible);
+							perso.retirerEnergie(1);
+							this.mort(perso, coord, bateau);
 						}else{
 							JOptionPane.showMessageDialog(null, "Ce joueur ne fait pas partit de votre équipe !");
 						}
 					
 					}else{
-						plateau[destination.getX()][destination.getY()] = perso;
+						if(plateau[destination.getX()][destination.getY()].isPiege()){
+							perso.retirerEnergie(35);
+							this.mort(perso, coord, bateau);
+							plateau[destination.getX()][destination.getY()].resetPiege();
+						}
+						if(plateau[destination.getX()][destination.getY()].getKey()){
+							plateau[destination.getX()][destination.getY()] = perso;
+							perso.setKey(true);
+						}else if(plateau[destination.getX()][destination.getY()].getChest()){
+							plateau[destination.getX()][destination.getY()] = perso;
+							perso.setChest(true);
+						}else plateau[destination.getX()][destination.getY()] = perso;
 						perso.setCoord(destination);
 						perso.retirerEnergie(1);
+						this.mort(perso, destination, bateau);
 						if(getNavire1().estDansLEquipe(perso)){
 							getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
 						}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
@@ -137,17 +162,21 @@ public class Ile {
 							plateau[coord.getX()][coord.getY()] = new Mer(); 
 						}
 					}
-			
+			//-----------------------VOLEUR------------------------------------------------
 				}else if(perso.getType().equals("voleur")){
 					
-					if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")){
+					if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")||
+							getParcelle(destination).getType().equals("piegeur") || getParcelle(destination).getType().equals("guerrier")){
 						if (! perso.memeEquipe((Personnage) getParcelle(destination))){
 							Personnage cible = (Personnage) getParcelle(destination);
 							perso.voler(cible);
 							perso.retirerEnergie(10);
+							this.mort(perso, coord, bateau);
 						}else{
 							Personnage cible = (Personnage) getParcelle(destination);
 							perso.Donner(cible);
+							perso.retirerEnergie(1);
+							this.mort(perso, coord, bateau);
 						}
 					
 					}else if(getParcelle(destination).getType().equals("navire")){
@@ -164,9 +193,15 @@ public class Ile {
 						}
 					
 					}else{
+						if(plateau[destination.getX()][destination.getY()].isPiege()){
+							perso.retirerEnergie(35);
+							this.mort(perso, coord, bateau);
+							plateau[destination.getX()][destination.getY()].resetPiege();
+						}
 						plateau[destination.getX()][destination.getY()] = perso;
 						perso.setCoord(destination);
 						perso.retirerEnergie(1);
+						this.mort(perso, destination, bateau);
 						if(getNavire1().estDansLEquipe(perso)){
 							getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
 						}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
@@ -179,25 +214,153 @@ public class Ile {
 							plateau[coord.getX()][coord.getY()] = new Mer(); 
 						}
 					}
+			//--------------------PIEGEUR--------------------------------------------------------
+				}else if(perso.getType().equals("piegeur")){
+					if(getParcelle(destination).getType().equals("roche") && ! getParcelle(destination).isPiege()){
+						Parcelle cible =  getParcelle(destination);
+						perso.placerPiege(cible);
+						perso.retirerEnergie(15);
+						this.mort(perso, coord, bateau);
+						grille1.println("Un piège a été placé.");
+				
+					}else if(getParcelle(destination).getType().equals("navire")){
+						Navire cible = (Navire) getParcelle(destination);
+						if(cible.estDansLEquipe(perso)){
+							cible.addPersoBateau(perso);	
+							if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+								plateau[coord.getX()][coord.getY()] = new Sable(); 
+							}else if( ! bateau){
+								plateau[coord.getX()][coord.getY()] = new Mer(); 
+							}
+						}else {
+							JOptionPane.showMessageDialog(null, "Ce n'est pas votre bateau !");
+						}
+					}else if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur") || 
+							getParcelle(destination).getType().equals("piegeur") || getParcelle(destination).getType().equals("guerrier")){
+						Personnage cible = (Personnage) getParcelle(destination);
+						if(perso.memeEquipe(cible)){
+							perso.Donner(cible);
+							perso.retirerEnergie(1);
+							this.mort(perso, coord, bateau);
+						}else{
+							JOptionPane.showMessageDialog(null, "Ce joueur ne fait pas partit de votre équipe !");
+						}
+					
+					}else{
+						int r;
+						if(getParcelle(destination).isPiege()){
+							r = 1;
+						}else r = JOptionPane.showOptionDialog(null, "Que voulez-vous faire ?", 
+								"Action du piegeur", JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
+								new String[]{"Placer un piège", "Se déplacer"}, 1);
+						if(r == 0){
+							Parcelle cible =  getParcelle(destination);
+							perso.placerPiege(cible);
+							perso.retirerEnergie(15);
+							this.mort(perso, coord, bateau);
+							grille1.println("Un piège a été placé.");
+						}else{
+							if(plateau[destination.getX()][destination.getY()].isPiege()){
+								perso.retirerEnergie(35);
+								plateau[destination.getX()][destination.getY()].resetPiege();
+							}
+							if(plateau[destination.getX()][destination.getY()].getKey()){
+								plateau[destination.getX()][destination.getY()] = perso;
+								perso.setKey(true);
+							}else if(plateau[destination.getX()][destination.getY()].getChest()){
+								plateau[destination.getX()][destination.getY()] = perso;
+								perso.setChest(true);
+							}else plateau[destination.getX()][destination.getY()] = perso;
+							perso.setCoord(destination);
+							perso.retirerEnergie(1);
+							this.mort(perso, destination, bateau);
+							if(getNavire1().estDansLEquipe(perso)){
+								getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
+							}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
+							if(bateau){
+								navire.rmPersoB(perso);
+							}
+							if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+								plateau[coord.getX()][coord.getY()] = new Sable(); 
+							}else if(! bateau){
+								plateau[coord.getX()][coord.getY()] = new Mer(); 
+							}
+						}
+					}
+					//----------------------GUERRIER-------------------------------------
+				}else if(perso.getType().equals("guerrier")){
+					if(getParcelle(destination).getType().equals("explorateur") || getParcelle(destination).getType().equals("voleur")||
+							getParcelle(destination).getType().equals("piegeur") || getParcelle(destination).getType().equals("guerrier")){
+						if (! perso.memeEquipe((Personnage) getParcelle(destination))){
+							Personnage cible = (Personnage) getParcelle(destination);
+							perso.attaque(cible);
+							perso.retirerEnergie(20);
+							grille1.println("Le guerrier inflige 25 points de dégâts.");
+							this.mort(perso, coord, bateau);
+							this.mort(cible, destination, bateau);
+						}else{
+							Personnage cible = (Personnage) getParcelle(destination);
+							perso.Donner(cible);
+							perso.retirerEnergie(1);
+							this.mort(perso, coord, bateau);
+						}
+					
+					}else if(getParcelle(destination).getType().equals("navire")){
+						Navire cible = (Navire) getParcelle(destination);
+						if(cible.estDansLEquipe(perso)){
+							cible.addPersoBateau(perso);	
+							if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+								plateau[coord.getX()][coord.getY()] = new Sable(); 
+							}else if (!bateau){
+								plateau[coord.getX()][coord.getY()] = new Mer(); 
+							}
+						}else {
+							JOptionPane.showMessageDialog(null, "Ce n'est pas votre bateau !");
+						}
+					
+					}else{
+						if(plateau[destination.getX()][destination.getY()].isPiege()){
+							perso.retirerEnergie(35);
+							plateau[destination.getX()][destination.getY()].resetPiege();
+							this.mort(perso, coord, bateau);
+						}
+						plateau[destination.getX()][destination.getY()] = perso;
+						perso.setCoord(destination);
+						perso.retirerEnergie(1);
+						this.mort(perso, destination, bateau);
+						if(getNavire1().estDansLEquipe(perso)){
+							getNavire1().updateBrouillard(destination.getX(), destination.getY(), size);
+						}else getNavire2().updateBrouillard(destination.getX(), destination.getY(), size);
+						if(bateau){
+							navire.rmPersoB(perso);
+						}
+						if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
+							plateau[coord.getX()][coord.getY()] = new Sable(); 
+						}else if(! bateau){
+							plateau[coord.getX()][coord.getY()] = new Mer(); 
+						}
 				}
 				perso.setaJoue(true);
-				if(perso.estMort()){
-					if(coord.getX() > 0 && coord.getX() < size-1 && coord.getY() > 0 && coord.getY() < size-1){
-						plateau[coord.getX()][coord.getY()] = new Sable(); 
-					}else if(! bateau){
-						plateau[coord.getX()][coord.getY()] = new Mer(); 
-					}
-					if(perso.getChest()){
-						getParcelle(coord).setChest(true);
-					}else if(perso.getKey()){
-						getParcelle(coord).setKey(true);
-					}
-				}
 			}
 		}
 		grille1.clearHighlight();
+		}
 	}
-	
+	private void mort(Personnage perso, Coordonee lol, boolean bateau){
+		if(perso.estMort()){
+			grille1.println("Un de vos personnages est mort...");
+			if(lol.getX() > 0 && lol.getX() < size-1 && lol.getY() > 0 && lol.getY() < size-1){
+				plateau[lol.getX()][lol.getY()] = new Sable(); 
+			}else if(! bateau){
+				plateau[lol.getX()][lol.getY()] = new Mer(); 
+			}
+			if(perso.getChest()){
+				getParcelle(lol).setChest(true);
+			}else if(perso.getKey()){
+				getParcelle(lol).setKey(true);
+			}
+		}
+	}
 	public static Navire getNavire1() {
 		return navire1;
 	}
@@ -205,7 +368,7 @@ public class Ile {
 	public static Navire getNavire2() {
 		return navire2;
 	}
-	public void remplirEnergie(){
+	public static void remplirEnergie(){
 		navire1.refillEnergie();
 		navire2.refillEnergie();
 	}
@@ -433,9 +596,8 @@ public class Ile {
 					}else 
 					if(plateau[i][j].getType().equals("explorateur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
 						if(i == 0 || j == 0 || i == size-1 || j == size-1){
-							jeu[j][i] = 5;
+							jeu[j][i] = 16;
 						}else{
-							//À changer lorsque tous les sprites seront là.
 							jeu[j][i] = 5;
 						}
 					}else if(plateau[i][j].getType().equals("explorateur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
@@ -444,6 +606,30 @@ public class Ile {
 						}else{
 							jeu[j][i] = 9;
 						}
+					}else if(plateau[i][j].getType().equals("piegeur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 19;
+						}else{
+							jeu[j][i] = 18;
+						}
+					}else if(plateau[i][j].getType().equals("piegeur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 21;
+						}else{
+							jeu[j][i] = 20;
+						}
+					}else if(plateau[i][j].getType().equals("guerrier") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 23;
+						}else{
+							jeu[j][i] = 22;
+						}
+					}else if(plateau[i][j].getType().equals("guerrier") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 25;
+						}else{
+							jeu[j][i] = 24;
+						}	
 					}else if(plateau[i][j].getType().equals("voleur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
 						if(i == 0 || j == 0 || i == size-1 || j == size-1){
 							jeu[j][i] = 14;
@@ -459,7 +645,10 @@ public class Ile {
 					}else if(plateau[i][j].getType().equals("roche")){
 						if(plateau[i][j].isRevealed() && plateau[i][j].getChest()){
 							jeu[j][i] = 6;
-						}else {
+						}else if(plateau[i][j].isPiege() && plateau[i][j].getEquipe1()){
+							//À remplacer par le sprite du piège sur le rocher.
+							jeu[j][i] = 5;
+						}else{
 							jeu[j][i] = 1;
 						}
 					}else if(plateau[i][j].getType().equals("mer")){
@@ -471,8 +660,10 @@ public class Ile {
 					}else if(plateau[i][j].getChest()){
 						jeu[j][i] = 6;
 					}else if(plateau[i][j].getKey()){
-						//A changer par sprite de la clé sur le sable
-						jeu[j][i] = 8;
+						jeu[j][i] = 17;
+					}else if(plateau[i][j].isPiege() && plateau[i][j].getEquipe1()){
+						//À remplacer par le sprite du piège.
+						jeu[j][i] = 5;
 					}else{
 						jeu[j][i] = 8;
 					}
@@ -511,10 +702,37 @@ public class Ile {
 							jeu[j][i] = 15;
 						}else{
 							jeu[j][i] = 12;
-						}					
+						}
+					}else if(plateau[i][j].getType().equals("piegeur") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 19;
+						}else{
+							jeu[j][i] = 18;
+						}
+					}else if(plateau[i][j].getType().equals("piegeur") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 21;
+						}else{
+							jeu[j][i] = 20;
+						}
+					}else if(plateau[i][j].getType().equals("guerrier") && navire1.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 23;
+						}else{
+							jeu[j][i] = 22;
+						}
+					}else if(plateau[i][j].getType().equals("guerrier") && navire2.estDansLEquipe((Personnage) plateau[i][j])){
+						if(i == 0 || j == 0 || i == size-1 || j == size-1){
+							jeu[j][i] = 25;
+						}else{
+							jeu[j][i] = 24;
+						}	
 					}else if(plateau[i][j].getType().equals("roche")){
 						if(plateau[i][j].isRevealed() && plateau[i][j].getChest()){
 							jeu[j][i] = 6;
+						}else if(plateau[i][j].isPiege() && ! plateau[i][j].getEquipe1()){
+							//À remplacer par le sprite du piège sur le rocher.
+							jeu[j][i] = 5;
 						}else {
 							jeu[j][i] = 1;
 						}
@@ -524,7 +742,14 @@ public class Ile {
 						jeu[j][i] = 3;
 					}else if(plateau[i][j].getType().equals("navire") && j == size-1){
 						jeu[j][i] = 4;
-					}else{
+					}else if(plateau[i][j].getChest()){
+						jeu[j][i] = 6;
+					}else if(plateau[i][j].getKey()){
+						jeu[j][i] = 17;
+					}else if(plateau[i][j].isPiege() && ! plateau[i][j].getEquipe1()){
+						//À remplacer par le sprite du piège.
+						jeu[j][i] = 5;
+					}else
 						jeu[j][i] = 8;
 					}
 				}
@@ -533,7 +758,7 @@ public class Ile {
 			grille1.affichage();
 		}
 	}	
-}
+
 		
 		
 		

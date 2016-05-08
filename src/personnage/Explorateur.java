@@ -24,9 +24,11 @@ public class Explorateur extends Personnage{
 					type.equals("navire") ||
 					type.equals("mer") || 
 					type.equals("voleur") ||
-					type.equals("explorateur")) return true;
-			else return false;
-		}else return false;
+					type.equals("piegeur") ||
+					type.equals("explorateur") ||
+					type.equals("guerrier")) return true;
+			return false;
+		} return false;
 	}
 	public void souleverRoche(Roche r){
 		if(r.getKey()){

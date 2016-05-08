@@ -131,6 +131,8 @@ public class Plateau {
 					Ile.tour1 = true;
 					Ile.tour2 = false;
 					System.out.println("Tour joueur 1");
+					Ile.remplirEnergie();
+
 				}
 				Ile.getNavire1().resetTurns();
 				Ile.getNavire2().resetTurns();

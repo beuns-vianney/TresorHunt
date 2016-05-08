@@ -87,7 +87,7 @@ abstract public class Personnage extends Parcelle{
 		this.coord = coord;
 	}
 	public void retirerEnergie(int nb){
-		if(this.energie-nb < 0){
+		if(this.energie-nb <= 0){
 			this.energie = 0;
 		}else{
 			this.energie -= nb;
@@ -150,4 +150,5 @@ abstract public class Personnage extends Parcelle{
 	public void setaJoue(boolean aJoue) {
 		this.aJoue = aJoue;
 	}
+	
 }

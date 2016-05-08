@@ -25,21 +25,34 @@ public class Voleur extends Personnage{
 				|| type.equals("navire") 
 				|| type.equals("explorateur") 
 				|| type.equals("voleur") 
-				|| type.equals("mer")) return true;
+				|| type.equals("piegeur")
+				|| type.equals("mer")
+				|| type.equals("guerrier")) return true;
 		return false;
 		} return false;
 	}
 	public void voler(Personnage e){
+		java.util.Random r = new java.util.Random();
+		boolean reussi = false;
 		if(e.getKey()){
-			this.setKey(true);
-			e.setKey(false);
-			JOptionPane.showMessageDialog(null, "Vous venez de dï¿½rober la clï¿½.");
+			if(r.nextInt(75) <= 75){
+				this.setKey(true);
+				e.setKey(false);
+				JOptionPane.showMessageDialog(null, "Vous venez de dérober la clé.");			
+			}
+			reussi = true;
 		}else if(e.getChest()){
-			this.setChest(true);
-			e.setChest(false);
-			JOptionPane.showMessageDialog(null, "Vous venez de dï¿½rober le trï¿½sor.");
-		}else {
-			JOptionPane.showMessageDialog(null, "Cet explorateur n'avait aucun objet sur lui.");
+			if(r.nextInt(75) <= 75){				
+				this.setChest(true);
+				e.setChest(false);
+				JOptionPane.showMessageDialog(null, "Vous venez de dérober le trésor.");
+			}
+			reussi = true;
+		}
+		if(reussi){
+			JOptionPane.showMessageDialog(null, "Vous n'avez pas réussi à voler ce personnage.");
+		}else{				
+			JOptionPane.showMessageDialog(null, "Ce personnage n'avait aucun objet sur lui.");
 		}
 	}
 	public String toString(){

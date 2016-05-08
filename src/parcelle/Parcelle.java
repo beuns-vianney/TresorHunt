@@ -11,6 +11,8 @@ import personnage.Personnage;
  */
 public class Parcelle {
 	private Coordonee cord;
+	private boolean piege = false;
+	private boolean equipe1;	//true si le piège appartient à l'équipe une.
 
 	public Coordonee getCord() {
 		return cord;
@@ -32,6 +34,9 @@ public class Parcelle {
 	}
 	public void voler(Personnage cible){
 		this.voler(cible);
+	}
+	public void placerPiege(Parcelle p){
+		this.placerPiege(p);
 	}
 	/**
 	 * 
@@ -70,5 +75,24 @@ public class Parcelle {
 	 */
 	public void setChest(boolean lol){
 		this.setChest(lol);
+	}
+	public boolean isPiege() {
+		return piege;
+	}
+	public void setPiege(boolean piege) {
+		this.piege = piege;
+	}
+	public boolean getEquipe1() {
+		return equipe1;
+	}
+	public void setEquipe1(boolean equipeP) {
+		this.equipe1 = equipeP;
+	}
+	public void resetPiege(){
+		this.setPiege(false);
+		this.setEquipe1(true);
+	}
+	public void attaque(Personnage p){
+		this.attaque(p);
 	}
 }

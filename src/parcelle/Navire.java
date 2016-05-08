@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import personnage.Explorateur;
+import personnage.Guerrier;
 import personnage.Personnage;
+import personnage.Piegeur;
 import personnage.Voleur;
 
 /**
@@ -117,12 +119,16 @@ public class Navire extends Parcelle {
 		while(this.equipe.size() < 10){
 			int rep = JOptionPane.showOptionDialog(null, "Quel personnage voulez-vous ajouter à votre équipe ?", 
 					"Equipe"+getID(), JOptionPane.NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, 
-					new String[]{"Explorateur", "Voleur", "Quitter"}, 2);
+					new String[]{"Explorateur", "Voleur", "Piegeur", "Guerrier", "Quitter"}, 4);
 			if(rep == 0){
 				equipe.add(new Explorateur());
 			}else if(rep == 1){
 				equipe.add(new Voleur());
-			}else if (rep == 2){
+			}else if(rep == 2){
+				equipe.add(new Piegeur());
+			}else if(rep == 3){
+				equipe.add(new Guerrier());
+			}else if (rep == 4){
 				if(equipe.size() == 0){
 					JOptionPane.showMessageDialog(null, "Vous devez avoir au moins un personnage dans votre équipe !");
 				}else{
