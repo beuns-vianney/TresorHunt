@@ -37,13 +37,21 @@ class GraphicPane extends JPanel {
 		// TODO Rendre la spécification de taille optionnelle (la calculer à partir du tableau d'entier)
 		// TODO Affichage d'un message d'erreur si fichier non trouvé.
 		// TODO Vérifier l'uniformité de taille des images	
-		nbLig = taille ;
+		nbLig = taille ;	
 		nbCol = taille ;
 		dimImage = 15 ; // Taille par défaut d'une case.
 		if (gif!=null){
 			nbImages=gif.length;
 			images=new ImageIcon[nbImages];	
-			for (int i=0;i<nbImages;i++) images[i]=new ImageIcon(gif[i]);
+			for (int i=0;i<nbImages;i++){
+				java.net.URL imageURL = Plateau.class.getResource(imagesPath[i]);
+				   if (imageURL != null) {
+				      images[i] = new ImageIcon(imageURL);
+				   } else { // Traitement  si image non trouv�e
+				      System.err.println("Image : '" + imagesPath[i]+ "' non trouv�e") ;
+				      images[i] = notFound ;
+				   }
+			}
 			dimImage=images[0].getIconHeight()+2;
 			setGraphicSize() ;
 			this.setBackground(Color.LIGHT_GRAY);
